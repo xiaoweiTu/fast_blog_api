@@ -12,13 +12,11 @@ declare(strict_types=1);
 
 namespace App\Exception\Handler;
 
-use App\Exception\WrongRequestException;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\ExceptionHandler;
-use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Response;
-use Hyperf\RateLimit\Exception\RateLimitException;
+use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -47,6 +45,10 @@ class AppExceptionHandler extends ExceptionHandler
             'code' => 400,
             'msg'  => $throwable->getMessage()
         ];
+
+        if ( $throwable instanceof ValidationException ) {
+            $data['msg'] = $throwable->errors();
+        }
 
         $this->stopPropagation();
 

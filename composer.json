@@ -33,7 +33,8 @@
         "phper666/jwt-auth": "^2.0",
         "qiniu/php-sdk": "^7.2",
         "hyperf/rate-limit": "^1.1",
-        "hyperf/devtool": "^1.1"
+        "hyperf/devtool": "^1.1",
+        "hyperf/validation": "^1.1"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",
