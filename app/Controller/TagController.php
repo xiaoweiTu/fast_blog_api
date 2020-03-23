@@ -8,9 +8,9 @@ use App\Request\TagRequest;
 use App\Services\TagService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\AutoController;
-use Hyperf\HttpServer\Annotation\GetMapping;
-use Hyperf\HttpServer\Annotation\PostMapping;
+use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\RateLimit\Annotation\RateLimit;
+use Phper666\JwtAuth\Middleware\JwtAuthMiddleware;
 
 /**
  * Class TagController
@@ -32,7 +32,6 @@ class TagController extends AbstractController
 
 
     /**
-     * @GetMapping()
      * @RateLimit(create=2,capacity=2)
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -41,33 +40,48 @@ class TagController extends AbstractController
         return $this->success($this->tagService->tagList());
     }
 
-    public function pagination()
+    /**
+     * @param TagRequest $request
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function pagination(TagRequest $request)
     {
+        return $this->success($this->tagService->pagination($request->all()));
+    }
 
+
+    /**
+     * @param TagRequest $request
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function save(TagRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->tagService->save($request->all()));
     }
 
     /**
-     * @PostMapping()
+     * @param TagRequest $request
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function save(TagRequest $tagRequest)
+    public function delete(TagRequest $request)
     {
-        $tagRequest->validated();
-        return $this->success([]);
+        $request->validated();
+        return $this->success($this->tagService->delete($request->input('id')));
     }
 
     /**
-     * @PostMapping()
+     * @param TagRequest $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function delete()
+    public function row(TagRequest $request)
     {
-    }
-
-    /**
-     * @GetMapping()
-     */
-    public function row()
-    {
-
+        $request->validated();
+        return $this->success($this->tagService->row($request->input('id')));
     }
 
 

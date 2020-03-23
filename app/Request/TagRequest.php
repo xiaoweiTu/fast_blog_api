@@ -27,17 +27,32 @@ class TagRequest extends FormRequest
         switch ($uri) {
             case 'tag/save':
                 $rules = [
+                    'id'     => 'sometimes|exists:tags',
+                    'name'   => 'required',
+                    'status' => 'required',
+                    'level'  => 'required',
+                ];
+                break;
+            case 'tag/delete':
+            case 'tag/row':
+                $rules = [
                     'id' => 'required',
                 ];
                 break;
+
         }
 
         return $rules;
     }
+
+
     public function attributes():array
     {
         return [
-            'id'    => 'ID',
+            'id'     => '标签ID',
+            'name'   => '标签名称',
+            'status' => '标签状态',
+            'level'  => '标签排序',
         ];
     }
 

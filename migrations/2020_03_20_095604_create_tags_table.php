@@ -15,7 +15,7 @@ class CreateTagsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name',30)->unique()->nullable(false)->default('');
             $table->tinyInteger('type')->unsigned()->nullable(false)->default(0)->comment("类型 0 普通 1 系列");
-            $table->tinyInteger('status')->unsigned()->nullable(false)->default(0)->comment("类型 0 正常 -1 隐藏 ");
+            $table->tinyInteger('status')->unsigned()->nullable(false)->default(1)->comment("类型 0 隐藏 1 正常 ");
             $table->tinyInteger('level')->unsigned()->nullable(false)->default(0);
             $table->charset   = 'utf8mb4';
             $table->collation = 'utf8mb4_general_ci';

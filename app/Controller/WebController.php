@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Blog\Tag;
+use App\Request\UserRequest;
+use App\Services\UserService;
 use Hyperf\Config\Annotation\Value;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\GetMapping;
 
@@ -26,14 +30,28 @@ class WebController extends AbstractController
      */
     private $webConfig;
 
+    /**
+     * @Inject()
+     * @var UserService
+     */
+    protected $webService;
+
 
     /**
-     * @GetMapping()
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function settings()
     {
-
         return $this->success([$this->webConfig]);
     }
+
+
+    public function status() {
+        return $this->success(Tag::$statusMapping);
+    }
+
+    public function type() {
+        return $this->success(Tag::$typeMapping);
+    }
+
 }

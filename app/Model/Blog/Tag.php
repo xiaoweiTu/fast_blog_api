@@ -35,9 +35,13 @@ class Tag extends Model
     ];
 
     public static $statusMapping = [
-        '-1' => '隐藏',
-        '0'  => '正常'
+        1 => '正常',
+        0 => '隐藏',
     ];
+
+    const NORMAL_STATUS = 1;
+    const HIDE_STATUS   = 0;
+
     public static $typeMapping   = [
         0 => "普通",
         1 => '系列'

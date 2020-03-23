@@ -16,7 +16,7 @@ class CreateArticlesTable extends Migration
             $table->string('title',120)->nullable(false)->default('')->unique();
             $table->text('content')->nullable(false);
             $table->integer('tag_id')->nullable(false)->default(0)->index();
-            $table->tinyInteger('status')->unsigned()->nullable(false)->default(0)->comment(" -1 隐藏 0 正常");
+            $table->tinyInteger('status')->unsigned()->nullable(false)->default(1)->comment(" 1 正常 0  隐藏");
             $table->tinyInteger('level')->unsigned()->nullable(false)->default(0);
             $table->charset   = 'utf8mb4'; //4个字节
             $table->collation = 'utf8mb4_general_ci';

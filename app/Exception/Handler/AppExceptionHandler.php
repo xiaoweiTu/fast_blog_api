@@ -17,15 +17,13 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpServer\Response;
 use Hyperf\Validation\ValidationException;
+use Phper666\JwtAuth\Exception\TokenValidException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class AppExceptionHandler extends ExceptionHandler
 {
-    /**
-     * @var StdoutLoggerInterface
-     */
-    protected $logger;
+
 
     /**
      * @Inject()
@@ -34,10 +32,6 @@ class AppExceptionHandler extends ExceptionHandler
     protected $response;
 
 
-    public function __construct(StdoutLoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
@@ -48,6 +42,13 @@ class AppExceptionHandler extends ExceptionHandler
 
         if ( $throwable instanceof ValidationException ) {
             $data['msg'] = $throwable->errors();
+        }
+
+        logger()->info('请求异常',$data);
+
+
+        if ( $throwable instanceof TokenValidException ) {
+            $data['code'] = 302;
         }
 
         $this->stopPropagation();

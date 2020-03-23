@@ -34,6 +34,11 @@ class User extends Model
         'password',
         'status',
     ];
+
+
+    protected $hidden = [
+        'password',
+    ];
     /**
      * The attributes that should be cast to native types.
      *
