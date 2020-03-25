@@ -42,7 +42,7 @@ class WebController extends AbstractController
      */
     public function settings()
     {
-        return $this->success([$this->webConfig]);
+        return $this->success($this->webConfig);
     }
 
 

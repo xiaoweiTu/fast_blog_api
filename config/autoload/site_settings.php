@@ -8,8 +8,9 @@
 
 return [
     'web_name'    => 'FastBlog',
-    'wbe_author'  => 'FastBlog',
-    'wbe_desc'    => 'a real FastBlog',
-    'wbe_keyword' => 'FastBlog',
-    'wbe_icon'    => 'FastBlog',
+    'web_author'  => 'FastBlog',
+    'web_desc'    => 'a real FastBlog',
+    'web_keyword' => 'laravel,php,hyperf,技术教程,Mysql,Redis,Linux,CentOs',
+    'web_icon'    => 'FastBlog',
+    'web_record'  => 'FastBlog',
 ];
