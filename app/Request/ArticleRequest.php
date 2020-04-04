@@ -24,12 +24,14 @@ class ArticleRequest extends FormRequest{
         switch ($uri) {
             case 'article/save':
                 $rules = [
-                    'id'      => 'sometimes|exists:articles',
-                    'title'   => 'required',
-                    'content' => 'required',
-                    'tag_id'  => 'required',
-                    'status'  => 'required',
-                    'level'   => 'required',
+                    'id'          => 'sometimes|exists:articles',
+                    'title'       => 'required',
+                    'content'     => 'required',
+                    'tag_id'      => 'required',
+                    'status'      => 'required',
+                    'level'       => 'required',
+                    'icon'        => 'required',
+                    'description' => 'required',
                 ];
                 break;
             case 'article/delete':
@@ -38,7 +40,11 @@ class ArticleRequest extends FormRequest{
                     'id' => 'required',
                 ];
                 break;
-
+            case 'article/list':
+                $rules = [
+                    'tag_id' => 'required',
+                ];
+                break;
         }
 
         return $rules;

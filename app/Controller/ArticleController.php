@@ -25,6 +25,11 @@ class ArticleController extends AbstractController
     protected $articleService;
 
 
+    /**
+     * @param ArticleRequest $request
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function pagination(ArticleRequest $request)
     {
         return $this->success($this->articleService->pagination($request->all()));
@@ -32,13 +37,17 @@ class ArticleController extends AbstractController
 
     /**
      * @param ArticleRequest $request
-     * @Middleware(JwtAuthMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function list(ArticleRequest $request) {
         return $this->success($this->articleService->list($request->all()));
     }
 
+    /**
+     * @param ArticleRequest $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function row(ArticleRequest $request) {
         $request->validated();
         return $this->success($this->articleService->row($request->input('id')));
@@ -63,4 +72,5 @@ class ArticleController extends AbstractController
         $request->validated();
         return $this->success($this->articleService->save($request->all()));
     }
+
 }

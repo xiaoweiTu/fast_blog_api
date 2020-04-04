@@ -30,6 +30,25 @@ class CreateUsersSeeder extends Seeder
             'title'   => 'Fast',
             'content' => 'this is a fast blog',
             'tag_id'  => 1,
+            'description' => 'this is a fast blog',
+            'icon'    => 'http://qiniu.txwei.cn/Fut1P7edmWvCqvm5mztihRpOzQzO',
+            'clicked' => 951
+        ]);
+        \App\Model\Blog\Article::query()->create([
+            'title'   => 'Fast1',
+            'content' => 'this is a fast blog',
+            'tag_id'  => 1,
+            'description' => 'this is a fast blog',
+            'icon'    => 'http://qiniu.txwei.cn/Fut1P7edmWvCqvm5mztihRpOzQzO',
+            'clicked' => 91
+        ]);
+        \App\Model\Blog\Article::query()->create([
+            'title'   => 'Fast2',
+            'content' => 'this is a fast blog',
+            'tag_id'  => 1,
+            'description' => 'this is a fast blog',
+            'icon'    => 'http://qiniu.txwei.cn/Fut1P7edmWvCqvm5mztihRpOzQzO',
+            'clicked' => 911
         ]);
         \App\Model\Blog\Article::query()->create([
             'title'   => 'Fast hyperf',

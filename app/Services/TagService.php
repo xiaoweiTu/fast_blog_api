@@ -12,6 +12,7 @@ namespace App\Services;
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
 use App\Model\Blog\Tag;
+use Hyperf\Database\Query\Builder;
 
 class TagService
 {
@@ -21,20 +22,58 @@ class TagService
      */
     public function tagList()
     {
-        return Tag::query()->where('status',Tag::NORMAL_STATUS)
+        return Tag::query()->with('articles')
+                            ->where('status',Tag::NORMAL_STATUS)
+                            ->where('type',0)
                             ->orderByDesc('level')
                             ->orderByDesc('id')
                             ->get();
     }
 
     /**
+     * @return \Hyperf\Database\Model\Builder[]|\Hyperf\Database\Model\Collection
+     */
+    public function all() {
+        return Tag::query()->where('status',   Tag::NORMAL_STATUS)
+                           ->orderByDesc('level')
+                           ->get();
+    }
+
+    /**
      * @param $params
      *
-     * @return \Hyperf\Contract\LengthAwarePaginatorInterface
+     * @return \Hyperf\Contract\PaginatorInterface
      */
     public function pagination($params) {
 
-        return Tag::query()->orderByDesc('id')->paginate(10);
+        $build = Tag::query()->orderByDesc('id');
+        $build = $this->buildWhere($build, $params);
+
+        return $build->paginate(10);
+    }
+
+    /**
+     * @param Builder $build
+     * @param array   $params
+     * search params
+     * @return Builder
+     */
+    protected function buildWhere($build,array $params)  {
+        if (!empty($params['level'])) {
+            $build->where('level','>=',$params['level']);
+        }
+        if (!empty($params['status'])) {
+            $build->whereIn('status',$params['status']);
+        }
+
+        if (!empty($params['type'])) {
+            $build->whereIn('type',$params['type']);
+        }
+
+        if (!empty($params['name'])) {
+            $build->where('name',$params['name']);
+        }
+        return $build;
     }
 
     /**
@@ -95,4 +134,5 @@ class TagService
     public function row($id) {
         return Tag::query()->where('id',$id)->first();
     }
+
 }

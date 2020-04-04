@@ -62,4 +62,8 @@ class Tag extends Model
     {
         return self::$typeMapping[$this->type] ?? '';
     }
+
+    public function articles() {
+        return $this->hasMany(Article::class,'tag_id','id')->where('status',Article::NORMAL_STATUS)->select(['title','id','tag_id','created_at','status']);
+    }
 }

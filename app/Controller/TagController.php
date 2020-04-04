@@ -41,6 +41,13 @@ class TagController extends AbstractController
     }
 
     /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function all() {
+        return $this->success($this->tagService->all());
+    }
+
+    /**
      * @param TagRequest $request
      * @Middleware(JwtAuthMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
@@ -83,6 +90,5 @@ class TagController extends AbstractController
         $request->validated();
         return $this->success($this->tagService->row($request->input('id')));
     }
-
 
 }

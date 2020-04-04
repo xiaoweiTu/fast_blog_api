@@ -17,6 +17,7 @@ return [
     'app_name' => env('APP_NAME', 'skeleton'),
     'debug'    => env('debug', false),
     'halt'     => env('JWT_SECRET','this is a fast blog'),
+    'cdn'      => env('CDN_HOST',''),
     StdoutLoggerInterface::class => [
         'log_level' => [
             LogLevel::ALERT,

@@ -4,28 +4,93 @@ namespace App\Services;
 
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
+use Hyperf\Database\Model\Builder;
 
 class ArticleService {
-
+    /**
+     * @param $params
+     *
+     * @return \Hyperf\Contract\LengthAwarePaginatorInterface
+     */
     public function pagination($params) {
-        return Article::query()->with('tag')
+
+        $build = Article::query()->with('tag')
+            ->where('status',Article::NORMAL_STATUS)
+            ->orderByDesc('level')
+            ->orderByDesc('id');
+
+        $build = $this->buildWhere($build, $params);
+
+
+        return $build->paginate(10);
+    }
+
+    /**
+     * @param Builder $build
+     * @param array   $params
+     *
+     * @return Builder
+     */
+    protected function buildWhere(Builder $build, array $params) {
+
+        if (!empty($params['created_at'])) {
+            $build->whereBetween('created_at',$params['created_at']);
+        }
+
+        if (!empty($params['title'])) {
+            $build->where('title', $params['title']);
+        }
+
+        if (!empty($params['tag_id'])) {
+            $build->whereIn('tag_id',$params['tag_id']);
+        }
+
+        if (!empty($params['status'])) {
+            $build->whereIn('status',$params['status']);
+
+        }
+        return $build;
+    }
+
+    /**
+     * @param $params
+     *
+     * @return \Hyperf\Contract\LengthAwarePaginatorInterface
+     */
+    public function list($params) {
+        $build = Article::query()->with('tag')
+                               ->whereHas('tag',function ($q) {
+                                   $q->where('type','!=',1);
+                               })
                                ->where('status',Article::NORMAL_STATUS)
                                ->orderByDesc('level')
-                               ->orderByDesc('id')
-                               ->paginate(10);
+                               ->orderByDesc('id');
+
+        if ( !empty($params['tag_id']) ) {
+            $build->where('tag_id',$params['tag_id']);
+        }
+
+        return $build->paginate(10);
     }
 
-    public function list($params) {
-        return Article::query()->with('tag')
-                               ->orderByDesc('id')
-                               ->get();
-    }
-
+    /**
+     * @param $id
+     *
+     * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
+     */
     public function row($id) {
-        return Article::query()->with('tag')->where('id',$id)->first();
+            $article = Article::query()->with('tag')->where('id',$id)->first();
+            $article->clicked += 1;
+            $article->save();
+        return $article;
     }
 
 
+    /**
+     * @param $id
+     *
+     * @return int|mixed
+     */
     public function delete($id) {
         return Article::query()->with('tag')->where('id',$id)->delete();
     }
@@ -57,11 +122,13 @@ class ArticleService {
             $article = new Article();
         }
 
-        $article->title   = $params['title'];
-        $article->content = $params['content'];
-        $article->level   = $params['level'];
-        $article->tag_id  = $params['tag_id'];
-        $article->status  = $params['status'];
+        $article->title       = $params['title'];
+        $article->content     = $params['content'];
+        $article->level       = $params['level'];
+        $article->tag_id      = $params['tag_id'];
+        $article->status      = $params['status'];
+        $article->icon        = $params['icon'];
+        $article->description = $params['description'];
 
         return $article->save();
     }
