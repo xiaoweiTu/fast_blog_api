@@ -22,7 +22,7 @@ class Article extends Model
      *
      * @var string
      */
-    protected $table = 'articles';
+    protected $table = 'blog_articles';
     /**
      * The attributes that are mass assignable.
      *
@@ -31,30 +31,23 @@ class Article extends Model
     protected $fillable = [];
 
     protected $guarded = [];
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = ['id' => 'integer', 'tag_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
-
 
     protected $appends = [
-        'status_name',
+        'is_hide_name',
         'minus_time'
     ];
 
     public static $statusMapping = [
-        1 => '正常',
-        0 => '隐藏',
+        1 => '隐藏',
+        0 => '正常',
     ];
 
-    const NORMAL_STATUS = 1;
-    const HIDE_STATUS   = 0;
+    const NORMAL_STATUS = 0;
+    const HIDE_STATUS   = 1;
 
-    public function getStatusNameAttribute()
+    public function getIsHideNameAttribute()
     {
-        return self::$statusMapping[$this->status] ?? '';
+        return self::$statusMapping[$this->is_hide] ?? '';
     }
 
     /**

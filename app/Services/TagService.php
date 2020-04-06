@@ -5,38 +5,33 @@
  * Date: 2020/3/20
  * Time: 15:07
  */
-
 namespace App\Services;
-
 
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
 use App\Model\Blog\Tag;
 use Hyperf\Database\Query\Builder;
 
-class TagService
-{
-
+class TagService {
     /**
      * @return \Hyperf\Database\Model\Builder[]|\Hyperf\Database\Model\Collection
      */
-    public function tagList()
-    {
+    public function tagList() {
         return Tag::query()->with('articles')
-                            ->where('status',Tag::NORMAL_STATUS)
-                            ->where('type',0)
-                            ->orderByDesc('level')
-                            ->orderByDesc('id')
-                            ->get();
+            ->where('is_hide', Tag::NORMAL_STATUS)
+            ->orderByDesc('order')
+            ->orderByDesc('id')
+            ->get();
     }
 
     /**
      * @return \Hyperf\Database\Model\Builder[]|\Hyperf\Database\Model\Collection
      */
     public function all() {
-        return Tag::query()->where('status',   Tag::NORMAL_STATUS)
-                           ->orderByDesc('level')
-                           ->get();
+        return Tag::query()->where('is_hide', Tag::NORMAL_STATUS)
+            ->orderByDesc('order')
+            ->orderByDesc('id')
+            ->get();
     }
 
     /**
@@ -45,10 +40,8 @@ class TagService
      * @return \Hyperf\Contract\PaginatorInterface
      */
     public function pagination($params) {
-
         $build = Tag::query()->orderByDesc('id');
         $build = $this->buildWhere($build, $params);
-
         return $build->paginate(10);
     }
 
@@ -56,22 +49,18 @@ class TagService
      * @param Builder $build
      * @param array   $params
      * search params
+     *
      * @return Builder
      */
-    protected function buildWhere($build,array $params)  {
-        if (!empty($params['level'])) {
-            $build->where('level','>=',$params['level']);
+    protected function buildWhere($build, array $params) {
+        if (!empty($params['order'])) {
+            $build->where('order', '>=', $params['order']);
         }
-        if (!empty($params['status'])) {
-            $build->whereIn('status',$params['status']);
+        if (!empty($params['is_hide'])) {
+            $build->whereIn('is_hide', $params['is_hide']);
         }
-
-        if (!empty($params['type'])) {
-            $build->whereIn('type',$params['type']);
-        }
-
         if (!empty($params['name'])) {
-            $build->where('name',$params['name']);
+            $build->where('name', $params['name']);
         }
         return $build;
     }
@@ -82,7 +71,7 @@ class TagService
      * @return int
      */
     protected function hasSameName($name) {
-        return Tag::query()->where('name',$name)->count();
+        return Tag::query()->where('name', $name)->count();
     }
 
     /**
@@ -92,21 +81,19 @@ class TagService
      */
     public function save($params) {
         if (isset($params['id'])) {
-            $tag = Tag::query()->where('id',$params['id'])->first();
-            if ($tag->name != $params['name'] && $this->hasSameName($params['name']) ) {
+            $tag = Tag::query()->where('id', $params['id'])->first();
+            if ($tag->name != $params['name'] && $this->hasSameName($params['name'])) {
                 throw new WrongRequestException("存在相同名称的标签!");
             }
         } else {
-            if ( $this->hasSameName($params['name']) ){
+            if ($this->hasSameName($params['name'])) {
                 throw new WrongRequestException("存在相同名称的标签!");
             }
             $tag = new Tag();
         }
-
-        $tag->name   = $params['name'];
-        $tag->status = $params['status'];
-        $tag->level  = $params['level'];
-        $tag->type   = $params['type'];
+        $tag->name    = $params['name'];
+        $tag->is_hide = $params['is_hide'];
+        $tag->order   = $params['order'];
 
         return $tag->save();
     }
@@ -117,14 +104,13 @@ class TagService
      * @return int|mixed
      */
     public function delete($id) {
-        $count = Article::query()->where('tag_id',$id)->count();
-        if ( $count == 0 ) {
-            return Tag::query()->where('id',$id)->delete();
+        $count = Article::query()->where('tag_id', $id)->count();
+        if ($count == 0) {
+            return Tag::query()->where('id', $id)->delete();
         } else {
             throw new WrongRequestException("该标签下还有内容,无法删除!");
         }
     }
-
 
     /**
      * @param $id
@@ -132,7 +118,6 @@ class TagService
      * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
      */
     public function row($id) {
-        return Tag::query()->where('id',$id)->first();
+        return Tag::query()->where('id', $id)->first();
     }
-
 }

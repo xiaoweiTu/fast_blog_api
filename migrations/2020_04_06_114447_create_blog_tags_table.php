@@ -4,19 +4,18 @@ use Hyperf\Database\Schema\Schema;
 use Hyperf\Database\Schema\Blueprint;
 use Hyperf\Database\Migrations\Migration;
 
-class CreateTagsTable extends Migration
+class CreateBlogTagsTable extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('tags', function (Blueprint $table) {
+        Schema::create('blog_tags', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name',30)->unique()->nullable(false)->default('');
-            $table->tinyInteger('type')->unsigned()->nullable(false)->default(0)->comment("类型 0 普通 1 系列");
-            $table->tinyInteger('status')->unsigned()->nullable(false)->default(1)->comment("类型 0 隐藏 1 正常 ");
-            $table->tinyInteger('level')->unsigned()->nullable(false)->default(0);
+            $table->unsignedTinyInteger('is_hide')->nullable(false)->default(0);
+            $table->integer('order')->unsigned()->nullable(false)->default(0);
             $table->charset   = 'utf8mb4';
             $table->collation = 'utf8mb4_general_ci';
             $table->timestamps();
@@ -28,6 +27,6 @@ class CreateTagsTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tags');
+        Schema::dropIfExists('blog_tags');
     }
 }

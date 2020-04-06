@@ -23,7 +23,7 @@ class CreateUsersSeeder extends Seeder
 
         // 创建标签
         \App\Model\Blog\Tag::query()->create(['name' => 'Laravel']);
-        \App\Model\Blog\Tag::query()->create(['name'=>'Hyperf','type'=>1]);
+        \App\Model\Blog\Tag::query()->create(['name'=>'Hyperf']);
 
         //创建文章
        \App\Model\Blog\Article::query()->create([

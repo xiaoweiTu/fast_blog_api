@@ -4,14 +4,7 @@ declare (strict_types=1);
 namespace App\Model\Blog;
 
 use Hyperf\DbConnection\Model\Model;
-/**
- * @property int $id
- * @property string $name
- * @property int $type
- * @property int $status
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- */
+
 class Tag extends Model
 {
     /**
@@ -19,7 +12,8 @@ class Tag extends Model
      *
      * @var string
      */
-    protected $table = 'tags';
+    protected $table = 'blog_tags';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -30,40 +24,28 @@ class Tag extends Model
     protected $guarded = [];
 
     protected $appends = [
-        'status_name',
-        'type_name'
+        'is_hide_name',
     ];
 
     public static $statusMapping = [
-        1 => '正常',
-        0 => '隐藏',
+        1 => '隐藏',
+        0 => '正常',
     ];
 
-    const NORMAL_STATUS = 1;
-    const HIDE_STATUS   = 0;
+    const NORMAL_STATUS = 0;
+    const HIDE_STATUS   = 1;
 
-    public static $typeMapping   = [
-        0 => "普通",
-        1 => '系列'
-    ];
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = ['id' => 'integer', 'type' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
-    public function getStatusNameAttribute()
+
+    public function getIsHideNameAttribute()
     {
-        return self::$statusMapping[$this->status] ?? '';
+        return self::$statusMapping[$this->is_hide] ?? '';
     }
 
-    public function getTypeNameAttribute()
-    {
-        return self::$typeMapping[$this->type] ?? '';
-    }
+
 
     public function articles() {
-        return $this->hasMany(Article::class,'tag_id','id')->where('status',Article::NORMAL_STATUS)->select(['title','id','tag_id','created_at','status']);
+        return $this->hasMany(Article::class,'tag_id','id')->where('is_hide',Article::NORMAL_STATUS)->select(['title','id','tag_id','created_at']);
     }
+
 }

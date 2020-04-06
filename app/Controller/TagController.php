@@ -32,7 +32,6 @@ class TagController extends AbstractController
 
 
     /**
-     * @RateLimit(create=2,capacity=2)
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function list()
