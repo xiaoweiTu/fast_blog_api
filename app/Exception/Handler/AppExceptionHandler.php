@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Exception\Handler;
 
+use App\Constants\ErrorCode;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\ExceptionHandler;
@@ -48,7 +49,8 @@ class AppExceptionHandler extends ExceptionHandler
 
 
         if ( $throwable instanceof TokenValidException ) {
-            $data['code'] = 302;
+            $data['code'] = ErrorCode::REQUEST_ERROR;
+            $data['msg']  = ErrorCode::getMessage(ErrorCode::REQUEST_ERROR);
         }
 
         $this->stopPropagation();
