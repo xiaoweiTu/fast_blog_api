@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Tag;
+use App\Services\ArticleService;
 use App\Services\UploadService;
 use App\Services\UserService;
 use Hyperf\Config\Annotation\Value;
@@ -43,6 +44,12 @@ class WebController extends AbstractController
      */
     protected $uploadService;
 
+    /**
+     * @Inject()
+     * @var ArticleService
+     */
+    protected $articleService;
+
 
     /**
      * @return \Psr\Http\Message\ResponseInterface
@@ -57,9 +64,6 @@ class WebController extends AbstractController
         return $this->success(Tag::$statusMapping);
     }
 
-    public function type() {
-        return $this->success(Tag::$typeMapping);
-    }
 
     /**
      * @param RequestInterface $request
@@ -74,6 +78,35 @@ class WebController extends AbstractController
         return $this->success($this->uploadService->image($request->file('image')));
     }
 
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     */
+    public function totalArticles() {
+        return $this->success($this->articleService->count());
+    }
 
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function totalClicked() {
+        return $this->success($this->articleService->totalClicked());
+    }
+
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function articlesInSeven() {
+        return $this->success($this->articleService->articlesInSeven());
+    }
+
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function clickedInSeven() {
+        return $this->success($this->articleService->clickedInSeven());
+    }
 
 }

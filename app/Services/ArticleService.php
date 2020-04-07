@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
 use Hyperf\Database\Model\Builder;
+use Hyperf\DbConnection\Db;
 
 class ArticleService {
     /**
@@ -113,5 +114,43 @@ class ArticleService {
         $article->icon        = $params['icon'];
         $article->description = $params['description'];
         return $article->save();
+    }
+
+    /**
+     * @return int
+     */
+    public function count() {
+        return Article::query()->count();
+    }
+
+    /**
+     * @return int
+     */
+    public function totalClicked() {
+        return Article::query()->sum('clicked');
+    }
+
+    /**
+     *
+     * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
+     */
+    public function articlesInSeven() {
+        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
+        return Article::query()->where('created_at','>=', $begin)
+                               ->orderBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+                               ->selectRaw("count(1) total,DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
+                               ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+                               ->get(['total','created_at']);
+    }
+
+    /**
+     * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
+     */
+    public function clickedInSeven() {
+        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
+        return Article::query()->where('created_at','>=', $begin)
+                               ->selectRaw("sum(clicked) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
+                               ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+                               ->get(['total','created_at']);
     }
 }

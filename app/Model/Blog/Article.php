@@ -74,7 +74,10 @@ class Article extends Model
     }
 
     public function getMinusTimeAttribute() {
-        return $this->formatDate($this->created_at->getTimestamp());
+        if ( $this->created_at ) {
+            return $this->formatDate($this->created_at->getTimestamp());
+        }
+        return '';
     }
 
 
