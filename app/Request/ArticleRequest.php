@@ -27,7 +27,6 @@ class ArticleRequest extends FormRequest {
                     'tag_id'      => 'required',
                     'is_hide'     => 'required',
                     'order'       => 'required',
-                    'icon'        => 'required',
                     'description' => 'required',
                 ];
                 break;
@@ -40,6 +39,11 @@ class ArticleRequest extends FormRequest {
             case 'article/list':
                 $rules = [
                     'tag_id' => 'required',
+                ];
+                break;
+            case 'article/like':
+                $rules = [
+                    'id' => 'required',
                 ];
                 break;
         }

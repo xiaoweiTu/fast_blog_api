@@ -50,7 +50,7 @@ class ArticleController extends AbstractController
      */
     public function row(ArticleRequest $request) {
         $request->validated();
-        return $this->success($this->articleService->row($request->input('id')));
+        return $this->success($this->articleService->row($request->input('id'),$request->input('add_click',false)));
     }
 
     /**
@@ -71,6 +71,17 @@ class ArticleController extends AbstractController
     public function save(ArticleRequest $request) {
         $request->validated();
         return $this->success($this->articleService->save($request->all()));
+    }
+
+    /**
+     * @param ArticleRequest $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function like(ArticleRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->articleService->like($request));
     }
 
 }

@@ -5,8 +5,21 @@ use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Redis\Redis;
 
 class ArticleService {
+
+    /**
+     * @Inject()
+     * @var Redis
+     */
+    protected $redis;
+
+
+    const LIKED_KEY = "article:like:";
+
     /**
      * @param $params
      *
@@ -64,9 +77,11 @@ class ArticleService {
      *
      * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
      */
-    public function row($id) {
+    public function row($id, $addClick) {
         $article          = Article::query()->with('tag')->where('id', $id)->first();
-        $article->clicked += 1;
+        if ($addClick) {
+            $article->clicked += 1;
+        }
         $article->save();
         return $article;
     }
@@ -152,5 +167,43 @@ class ArticleService {
                                ->selectRaw("sum(clicked) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
                                ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
                                ->get(['total','created_at']);
+    }
+
+
+
+    protected function getLikedKey($id, $ip) {
+        return self::LIKED_KEY.$ip.':'.$id;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
+    public function like(RequestInterface $request)
+    {
+        $ip = $request->getHeader('x-real-ip');
+
+        if (!empty($ip)) {
+            $ip = array_shift($ip);
+            $key = $this->getLikedKey($request->input('id'),$ip);
+            $liked = $this->redis->get($key);
+            if (empty($liked)) {
+                $exTime = strtotime(date('Y-m-d 23:59:59')) - time();
+                $this->redis->setex($key,$exTime,1);
+            } else if($liked > 5 ) {
+                throw new WrongRequestException("每天仅可点赞5次哟");
+            } else if ($liked <= 5 ) {
+                $this->redis->incr($key);
+            }
+        }
+
+        $article = Article::query()->where('id',$request->input('id'))->first();
+        if (empty($article)) {
+            throw new WrongRequestException("无此文章!");
+        }
+
+        $article->likes += 1;
+        return $article->save();
     }
 }
