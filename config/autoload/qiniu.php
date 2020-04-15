@@ -7,7 +7,7 @@
  */
 
 return [
-    'access_ey' => '0CxVO5K2Bw8J7w8Fq8m9z513V0kBMS2A89DZkToz',
-    'secret_key'=> 'e_STDZijm4K4_WUZstLkliOTtgswcGxgG5Lnerbt',
-    'bucket'    => 'myqiniuimages'
+    'access_ey' => '',
+    'secret_key'=> '',
+    'bucket'    => ''
 ];
