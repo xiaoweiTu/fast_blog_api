@@ -7,11 +7,11 @@
  */
 
 return [
-    'web_name'    => 'FastBlog',
-    'web_author'  => 'FastBlog',
-    'web_desc'    => 'a real FastBlog',
-    'web_keyword' => 'laravel,php,hyperf,技术教程,Mysql,Redis,Linux,CentOs',
-    'web_icon'    => 'http://qiniu.txwei.cn/icon-big',
-    'web_record'  => 'FastBlog',
-    'web_who'     => 'PHP',
+    'web_name'    => 'FastBlog',  //网站名称 , 页面左上角展示和title中展示
+    'web_author'  => 'FastBlog',  //文章中展示
+    'web_desc'    => 'a real FastBlog', // 网站描述
+    'web_keyword' => 'laravel,php,hyperf,技术教程,Mysql,Redis,Linux,CentOs',  // 关键词
+    'web_icon'    => 'http://qiniu.txwei.cn/icon-big',  // icon地址
+    'web_record'  => 'FastBlog',    // 备案号
+    'web_who'     => 'PHP', // 站长身份
 ];

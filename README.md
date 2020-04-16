@@ -32,3 +32,11 @@ php bin/hyperf.php migrate --seed
 php bin/hyperf.php start
 
 ```
+
+# 关于上传文件
+
+使用了七牛云上传,需要在 config/autoload/qiniu.php 中配置
+
+# 关于网站配置
+
+在 config/autoload/site_settings 中配置
