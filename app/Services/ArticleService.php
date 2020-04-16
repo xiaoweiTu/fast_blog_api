@@ -65,6 +65,7 @@ class ArticleService {
         $build = Article::query()->with('tag')
             ->where('is_hide', Article::NORMAL_STATUS)
             ->orderByDesc('order')
+            ->orderByDesc('likes')
             ->orderByDesc('id');
         if (!empty($params['tag_id'])) {
             $build->where('tag_id', $params['tag_id']);
@@ -145,6 +146,15 @@ class ArticleService {
         return Article::query()->sum('clicked');
     }
 
+
+    /**
+     * @return int
+     */
+    public function totalLikes()
+    {
+        return Article::query()->sum('likes');
+    }
+
     /**
      *
      * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
@@ -169,8 +179,25 @@ class ArticleService {
                                ->get(['total','created_at']);
     }
 
+    /**
+     * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
+     */
+    public function likesInSeven()
+    {
+        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
+        return Article::query()->where('created_at','>=', $begin)
+            ->selectRaw("sum(likes) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
+            ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+            ->get(['total','created_at']);
+    }
 
 
+    /**
+     * @param $id
+     * @param $ip
+     *
+     * @return string
+     */
     protected function getLikedKey($id, $ip) {
         return self::LIKED_KEY.$ip.':'.$id;
     }

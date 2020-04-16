@@ -97,6 +97,14 @@ class WebController extends AbstractController
      * @Middleware(JwtAuthMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    public function totalLikes() {
+        return $this->success($this->articleService->totalLikes());
+    }
+
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function articlesInSeven() {
         return $this->success($this->articleService->articlesInSeven());
     }
@@ -107,6 +115,14 @@ class WebController extends AbstractController
      */
     public function clickedInSeven() {
         return $this->success($this->articleService->clickedInSeven());
+    }
+
+    /**
+     * @Middleware(JwtAuthMiddleware::class)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function likesInSeven() {
+        return $this->success($this->articleService->likesInSeven());
     }
 
 }
