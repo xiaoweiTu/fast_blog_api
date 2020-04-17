@@ -218,9 +218,9 @@ class ArticleService {
             if (empty($liked)) {
                 $exTime = strtotime(date('Y-m-d 23:59:59')) - time();
                 $this->redis->setex($key,$exTime,1);
-            } else if($liked > 5 ) {
+            } else if($liked >= 5 ) {
                 throw new WrongRequestException("每天仅可点赞5次哟");
-            } else if ($liked <= 5 ) {
+            } else if ($liked < 5 ) {
                 $this->redis->incr($key);
             }
         }
