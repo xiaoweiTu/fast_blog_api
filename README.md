@@ -27,7 +27,16 @@ cp .env.example .env
 
 php bin/hyperf.php migrate --seed
 
-6. 启动项目
+默认创建一个管理员
+13177839316@163.com
+密码
+123456
+
+6. 修改跨域中间件的指定域名
+
+app/Middleware/CorsMiddleware.php
+
+7. 启动项目
 
 php bin/hyperf.php start
 
