@@ -32,9 +32,32 @@ class UserController extends AbstractController
      * @RateLimit(create=1,capacity=1,consume=1)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function login(UserRequest $request) {
+    public function admin_login(UserRequest $request) {
         $request->validated();
-        return $this->success($this->userService->login($request->input('email'),$request->input('password')));
+        return $this->success($this->userService->login($request->input('email'),$request->input('password'),true));
+    }
+
+
+    /**
+     * @param UserRequest $request
+     * @RateLimit(create=100,capacity=100,consume=1)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function login(UserRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->userService->login($request->input('email'),$request->input('password'),false));
+    }
+
+    /**
+     * @param UserRequest $request
+     * @RateLimit(create=100,capacity=100,consume=1)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function register(UserRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->userService->register($request->all()));
     }
 
     /**

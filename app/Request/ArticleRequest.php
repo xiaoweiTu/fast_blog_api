@@ -28,6 +28,7 @@ class ArticleRequest extends FormRequest {
                     'is_hide'     => 'required',
                     'order'       => 'required',
                     'description' => 'required',
+                    'editor_type' => 'required|in:0,1',
                 ];
                 break;
             case 'article/delete':
@@ -38,7 +39,7 @@ class ArticleRequest extends FormRequest {
                 break;
             case 'article/list':
                 $rules = [
-                    'tag_id' => 'required',
+                    'tag_id' => 'sometimes',
                 ];
                 break;
             case 'article/like':

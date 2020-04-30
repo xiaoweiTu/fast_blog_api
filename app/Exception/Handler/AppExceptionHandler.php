@@ -42,7 +42,10 @@ class AppExceptionHandler extends ExceptionHandler
         ];
 
         if ( $throwable instanceof ValidationException ) {
-            $data['msg'] = $throwable->errors();
+            $data['msg'] = '';
+            foreach($throwable->errors() as $key=>$msg ) {
+                $data['msg'] .= $msg[0].'|';
+            }
         }
 
         logger()->info('请求异常',$data);

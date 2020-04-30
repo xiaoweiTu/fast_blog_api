@@ -34,7 +34,8 @@
         "qiniu/php-sdk": "^7.2",
         "hyperf/rate-limit": "^1.1",
         "hyperf/devtool": "^1.1",
-        "hyperf/validation": "^1.1"
+        "hyperf/validation": "^1.1",
+        "xiaowei/model_filter": "^1.1"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",

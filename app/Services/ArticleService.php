@@ -26,35 +26,14 @@ class ArticleService {
      * @return \Hyperf\Contract\LengthAwarePaginatorInterface
      */
     public function pagination($params) {
-        $build = Article::query()->with('tag')
+        return Article::query()->filter($params)->with('tag')
             ->where('is_hide', Article::NORMAL_STATUS)
             ->orderByDesc('order')
-            ->orderByDesc('id');
-        $build = $this->buildWhere($build, $params);
-        return $build->paginate(10);
+            ->orderByDesc('id')
+            ->paginate(10);
     }
 
-    /**
-     * @param Builder $build
-     * @param array   $params
-     *
-     * @return Builder
-     */
-    protected function buildWhere(Builder $build, array $params) {
-        if (!empty($params['created_at'])) {
-            $build->whereBetween('created_at', $params['created_at']);
-        }
-        if (!empty($params['title'])) {
-            $build->where('title', $params['title']);
-        }
-        if (!empty($params['tag_id'])) {
-            $build->whereIn('tag_id', $params['tag_id']);
-        }
-        if (!empty($params['is_hide'])) {
-            $build->whereIn('is_hide', $params['is_hide']);
-        }
-        return $build;
-    }
+
 
     /**
      * @param $params
@@ -62,15 +41,11 @@ class ArticleService {
      * @return \Hyperf\Contract\LengthAwarePaginatorInterface
      */
     public function list($params) {
-        $build = Article::query()->with('tag')
+        return Article::query()->filter($params)->with('tag')
             ->where('is_hide', Article::NORMAL_STATUS)
             ->orderByDesc('order')
             ->orderByDesc('likes')
-            ->orderByDesc('id');
-        if (!empty($params['tag_id'])) {
-            $build->where('tag_id', $params['tag_id']);
-        }
-        return $build->paginate(10);
+            ->orderByDesc('id')->paginate(10);
     }
 
     /**
@@ -129,6 +104,7 @@ class ArticleService {
         $article->is_hide     = $params['is_hide'];
         $article->icon        = $params['icon'];
         $article->description = $params['description'];
+        $article->editor_type = $params['editor_type'];
         return $article->save();
     }
 

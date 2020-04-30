@@ -4,19 +4,21 @@ declare (strict_types=1);
 namespace App\Model\Blog;
 
 use Hyperf\DbConnection\Model\Model;
-use function Zipkin\Timestamp\now;
+use Xiaowei\ModelFilter\Filterable;
 
 /**
- * @property int $id 
- * @property string $title 
- * @property string $content 
- * @property int $tag_id 
- * @property int $status 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id
+ * @property string $title
+ * @property string $content
+ * @property int $tag_id
+ * @property int $status
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
  */
 class Article extends Model
 {
+    use Filterable;
+
     /**
      * The table associated with the model.
      *

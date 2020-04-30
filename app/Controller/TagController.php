@@ -48,7 +48,6 @@ class TagController extends AbstractController
 
     /**
      * @param TagRequest $request
-     * @Middleware(JwtAuthMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function pagination(TagRequest $request)

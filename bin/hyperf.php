@@ -19,5 +19,6 @@ require BASE_PATH .'/app/Help/Help.php';
     $container = require BASE_PATH . '/config/container.php';
 
     $application = $container->get(\Hyperf\Contract\ApplicationInterface::class);
+
     $application->run();
 })();

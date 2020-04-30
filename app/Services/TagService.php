@@ -40,30 +40,11 @@ class TagService {
      * @return \Hyperf\Contract\PaginatorInterface
      */
     public function pagination($params) {
-        $build = Tag::query()->orderByDesc('id');
-        $build = $this->buildWhere($build, $params);
+        $build = Tag::query()->filter($params)->orderByDesc('id');
         return $build->paginate(10);
     }
 
-    /**
-     * @param Builder $build
-     * @param array   $params
-     * search params
-     *
-     * @return Builder
-     */
-    protected function buildWhere($build, array $params) {
-        if (!empty($params['order'])) {
-            $build->where('order', '>=', $params['order']);
-        }
-        if (!empty($params['is_hide'])) {
-            $build->whereIn('is_hide', $params['is_hide']);
-        }
-        if (!empty($params['name'])) {
-            $build->where('name', $params['name']);
-        }
-        return $build;
-    }
+
 
     /**
      * @param $name

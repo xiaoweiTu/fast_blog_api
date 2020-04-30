@@ -4,9 +4,13 @@ declare (strict_types=1);
 namespace App\Model\Blog;
 
 use Hyperf\DbConnection\Model\Model;
+use Xiaowei\ModelFilter\Filterable;
+
 
 class Tag extends Model
 {
+    use Filterable;
+
     /**
      * The table associated with the model.
      *
@@ -34,7 +38,6 @@ class Tag extends Model
 
     const NORMAL_STATUS = 0;
     const HIDE_STATUS   = 1;
-
 
 
     public function getIsHideNameAttribute()

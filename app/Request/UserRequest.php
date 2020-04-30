@@ -25,11 +25,21 @@ class UserRequest extends FormRequest{
 
             switch ($uri) {
                 case 'user/login':
+                case 'user/admin_login':
                     $rules = [
                         'email'    => 'required|exists:users',
                         'password' => 'required',
                     ];
                     break;
+                case 'user/register':
+                    $rules = [
+                        'email'            => 'required|unique:users',
+                        'password'         => 'required',
+                        'password_confirm' => 'same:password',
+                        'name'             => 'required|unique:users'
+                    ];
+                    break;
+
             }
 
             return $rules;
@@ -41,6 +51,7 @@ class UserRequest extends FormRequest{
             return [
                 'email'     => '邮箱',
                 'password'  => '密码',
+                'name'      => '昵称',
             ];
         }
 
