@@ -37,4 +37,13 @@ class ArticleFilter extends ModelFilter
     {
         $this->whereIn('is_hide', $value);
     }
+
+    public function type($value)
+    {
+        if (is_array($value)) {
+            $this->whereIn('type',$value);
+        } else {
+            $this->where('type',$value);
+        }
+    }
 }

@@ -5,6 +5,7 @@
  * Date: 2020/3/20
  * Time: 15:07
  */
+
 namespace App\Services;
 
 use App\Exception\WrongRequestException;
@@ -12,11 +13,13 @@ use App\Model\Blog\Article;
 use App\Model\Blog\Tag;
 use Hyperf\Database\Query\Builder;
 
-class TagService {
+class TagService
+{
     /**
      * @return \Hyperf\Database\Model\Builder[]|\Hyperf\Database\Model\Collection
      */
-    public function tagList() {
+    public function tagList()
+    {
         return Tag::query()->with('articles')
             ->where('is_hide', Tag::NORMAL_STATUS)
             ->orderByDesc('order')
@@ -27,7 +30,8 @@ class TagService {
     /**
      * @return \Hyperf\Database\Model\Builder[]|\Hyperf\Database\Model\Collection
      */
-    public function all() {
+    public function all()
+    {
         return Tag::query()->where('is_hide', Tag::NORMAL_STATUS)
             ->orderByDesc('order')
             ->orderByDesc('id')
@@ -39,11 +43,10 @@ class TagService {
      *
      * @return \Hyperf\Contract\PaginatorInterface
      */
-    public function pagination($params) {
-        $build = Tag::query()->filter($params)->orderByDesc('id');
-        return $build->paginate(10);
+    public function pagination($params)
+    {
+        return Tag::query()->filter($params)->orderByDesc('id')->paginate(10);
     }
-
 
 
     /**
@@ -51,7 +54,8 @@ class TagService {
      *
      * @return int
      */
-    protected function hasSameName($name) {
+    protected function hasSameName($name)
+    {
         return Tag::query()->where('name', $name)->count();
     }
 
@@ -60,7 +64,8 @@ class TagService {
      *
      * @return bool
      */
-    public function save($params) {
+    public function save($params)
+    {
         if (isset($params['id'])) {
             $tag = Tag::query()->where('id', $params['id'])->first();
             if ($tag->name != $params['name'] && $this->hasSameName($params['name'])) {
@@ -75,6 +80,7 @@ class TagService {
         $tag->name    = $params['name'];
         $tag->is_hide = $params['is_hide'];
         $tag->order   = $params['order'];
+        $tag->type    = $params['type'];
 
         return $tag->save();
     }
@@ -84,7 +90,8 @@ class TagService {
      *
      * @return int|mixed
      */
-    public function delete($id) {
+    public function delete($id)
+    {
         $count = Article::query()->where('tag_id', $id)->count();
         if ($count == 0) {
             return Tag::query()->where('id', $id)->delete();
@@ -98,7 +105,9 @@ class TagService {
      *
      * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
      */
-    public function row($id) {
+    public function row($id)
+    {
         return Tag::query()->where('id', $id)->first();
     }
+
 }

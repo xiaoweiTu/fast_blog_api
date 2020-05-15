@@ -1,21 +1,25 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Request;
 
 use Hyperf\Validation\Request\FormRequest;
 
-class TagRequest extends FormRequest {
+class TagRequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool {
+    public function authorize(): bool
+    {
         return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array {
+    public function rules(): array
+    {
         $rules = [];
         $uri   = $this->path();
         switch ($uri) {
@@ -25,6 +29,7 @@ class TagRequest extends FormRequest {
                     'name'    => 'required',
                     'is_hide' => 'required',
                     'order'   => 'required',
+                    'type'    => 'required|in:0,1,2',
                 ];
                 break;
             case 'tag/delete':
@@ -37,7 +42,8 @@ class TagRequest extends FormRequest {
         return $rules;
     }
 
-    public function attributes(): array {
+    public function attributes(): array
+    {
         return [
             'id'      => '标签ID',
             'name'    => '标签名称',

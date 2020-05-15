@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Exception\WrongRequestException;
+use App\Model\Blog\Article;
 use App\Model\Blog\Tag;
 use App\Services\ArticleService;
 use App\Services\UploadService;
@@ -15,6 +16,7 @@ use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Phper666\JwtAuth\Middleware\JwtAuthMiddleware;
+use App\Middleware\AdminMiddleware;
 
 /**
  * Class WebSettingController
@@ -59,15 +61,33 @@ class WebController extends AbstractController
         return $this->success($this->webConfig);
     }
 
-
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function status() {
         return $this->success(Tag::$statusMapping);
+    }
+
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function tagTypeMapping()
+    {
+        return $this->success(Tag::$typeMapping);
+    }
+
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function articleTypeMapping()
+    {
+        return $this->success(Article::$typeMapping);
     }
 
 
     /**
      * @param RequestInterface $request
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
@@ -79,18 +99,18 @@ class WebController extends AbstractController
     }
 
     /**
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      */
     public function totalArticles() {
         return $this->success($this->articleService->count());
     }
 
     /**
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function totalClicked() {
-        return $this->success($this->articleService->totalClicked());
+    public function totalUsers() {
+        return $this->success($this->articleService->totalUsers());
     }
 
     /**
@@ -102,27 +122,27 @@ class WebController extends AbstractController
     }
 
     /**
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function articlesInSeven() {
-        return $this->success($this->articleService->articlesInSeven());
+    public function articlesSta() {
+        return $this->success($this->articleService->articlesSta());
     }
 
     /**
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function clickedInSeven() {
-        return $this->success($this->articleService->clickedInSeven());
+    public function userSta() {
+        return $this->success($this->articleService->userSta());
     }
 
     /**
-     * @Middleware(JwtAuthMiddleware::class)
+     * @Middleware(AdminMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function likesInSeven() {
-        return $this->success($this->articleService->likesInSeven());
+    public function likesSta() {
+        return $this->success($this->articleService->likesSta());
     }
 
 }

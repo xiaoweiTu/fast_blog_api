@@ -81,7 +81,7 @@ class ArticleController extends AbstractController
     public function like(ArticleRequest $request)
     {
         $request->validated();
-        return $this->success($this->articleService->like($request));
+        return $this->success($this->articleService->like($request->input('user_id'), $request->input('id')));
     }
 
 }

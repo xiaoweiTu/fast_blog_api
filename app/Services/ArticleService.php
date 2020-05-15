@@ -3,6 +3,8 @@ namespace App\Services;
 
 use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
+use App\Model\Blog\User;
+use App\Model\Blog\UserLike;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
@@ -41,7 +43,7 @@ class ArticleService {
      * @return \Hyperf\Contract\LengthAwarePaginatorInterface
      */
     public function list($params) {
-        return Article::query()->filter($params)->with('tag')
+        return Article::query()->filter($params)->with(['tag','talks'])
             ->where('is_hide', Article::NORMAL_STATUS)
             ->orderByDesc('order')
             ->orderByDesc('likes')
@@ -54,7 +56,7 @@ class ArticleService {
      * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
      */
     public function row($id, $addClick) {
-        $article          = Article::query()->with('tag')->where('id', $id)->first();
+        $article          = Article::query()->with(['tag','talks'])->where('id', $id)->first();
         if ($addClick) {
             $article->clicked += 1;
         }
@@ -105,6 +107,7 @@ class ArticleService {
         $article->icon        = $params['icon'];
         $article->description = $params['description'];
         $article->editor_type = $params['editor_type'];
+        $article->type        = $params['type'];
         return $article->save();
     }
 
@@ -118,8 +121,8 @@ class ArticleService {
     /**
      * @return int
      */
-    public function totalClicked() {
-        return Article::query()->sum('clicked');
+    public function totalUsers() {
+        return User::query()->count();
     }
 
 
@@ -135,9 +138,8 @@ class ArticleService {
      *
      * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
      */
-    public function articlesInSeven() {
-        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
-        return Article::query()->where('created_at','>=', $begin)
+    public function articlesSta() {
+        return Article::query()
                                ->orderBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
                                ->selectRaw("count(1) total,DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
                                ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
@@ -147,22 +149,24 @@ class ArticleService {
     /**
      * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
      */
-    public function clickedInSeven() {
-        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
-        return Article::query()->where('created_at','>=', $begin)
-                               ->selectRaw("sum(clicked) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
-                               ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
-                               ->get(['total','created_at']);
+    public function userSta()
+    {
+        return User::query()
+            ->orderBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+            ->selectRaw("count(1) total,DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
+            ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
+            ->get(['total','created_at']);
     }
+
+
 
     /**
      * @return Builder[]|\Hyperf\Database\Model\Collection|\Hyperf\Database\Query\Builder[]|\Hyperf\Utils\Collection
      */
-    public function likesInSeven()
+    public function likesSta()
     {
-        $begin = date('Y-m-d 00:00:00',strtotime('-7 days'));
-        return Article::query()->where('created_at','>=', $begin)
-            ->selectRaw("sum(likes) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
+        return UserLike::query()
+            ->selectRaw("count(1) total, DATE_FORMAT(created_at,'%Y-%m-%d') created_at")
             ->groupBy(Db::raw("DATE_FORMAT(created_at,'%Y-%m-%d')"))
             ->get(['total','created_at']);
     }
@@ -183,30 +187,26 @@ class ArticleService {
      *
      * @return bool
      */
-    public function like(RequestInterface $request)
+    public function like($userId, $id)
     {
-        $ip = $request->getHeader('x-real-ip');
 
-        if (!empty($ip)) {
-            $ip = array_shift($ip);
-            $key = $this->getLikedKey($request->input('id'),$ip);
-            $liked = $this->redis->get($key);
-            if (empty($liked)) {
-                $exTime = strtotime(date('Y-m-d 23:59:59')) - time();
-                $this->redis->setex($key,$exTime,1);
-            } else if($liked >= 5 ) {
-                throw new WrongRequestException("每天仅可点赞5次哟");
-            } else if ($liked < 5 ) {
-                $this->redis->incr($key);
-            }
+        if ( UserLike::query()->where('user_id',$userId)->where('article_id',$id)->count() > 0 ) {
+            throw new WrongRequestException("您已经点过赞了!");
         }
 
-        $article = Article::query()->where('id',$request->input('id'))->first();
+        $article = Article::query()->where('id',$id)->first();
         if (empty($article)) {
             throw new WrongRequestException("无此文章!");
         }
 
         $article->likes += 1;
-        return $article->save();
+        $article->save();
+
+        UserLike::query()->create([
+            'user_id' => $userId,
+            'article_id' => $id
+        ]);
+
+        return true;
     }
 }

@@ -36,4 +36,13 @@ class TagFilter extends ModelFilter
             $this->where('is_hide',$value);
         }
     }
+
+    public function type($value)
+    {
+        if (is_array($value)) {
+            $this->whereIn('type',$value);
+        } else {
+            $this->where('type',$value);
+        }
+    }
 }

@@ -4,18 +4,11 @@ declare (strict_types=1);
 namespace App\Model\Blog;
 
 use Hyperf\DbConnection\Model\Model;
-/**
- * @property int $id
- * @property string $name
- * @property string $email
- * @property string $password
- * @property int $is_admin
- * @property int $status
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- */
+use Xiaowei\ModelFilter\Filterable;
+
 class User extends Model
 {
+    use Filterable;
     /**
      * The table associated with the model.
      *
@@ -33,17 +26,46 @@ class User extends Model
         'email',
         'password',
         'status',
+        'last_login',
+        'last_ip'
+    ];
+
+
+    public static $statusMapping = [
+        0 => '正常',
+        1 => '小黑屋',
+        2 => '禁言',
+        3 => '黑名单'
+    ];
+
+    public static $isAdminMapping = [
+        0 => '否',
+        1 => '是'
+    ];
+
+    public $appends = [
+        'last_ip_address',
+        'status_name',
+        'is_admin_name'
     ];
 
 
     protected $hidden = [
         'password',
     ];
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = ['id' => 'integer', 'is_admin' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
+    public function getLastIpAddressAttribute()
+    {
+        return $this->last_ip ? long2ip($this->last_ip) : 0;
+    }
+
+    public function getStatusNameAttribute()
+    {
+        return self::$statusMapping[$this->status] ?? '';
+    }
+
+    public function getIsAdminNameAttribute()
+    {
+        return self::$isAdminMapping[$this->is_admin] ?? '';
+    }
 }

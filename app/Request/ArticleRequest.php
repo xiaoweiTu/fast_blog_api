@@ -1,21 +1,25 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Request;
 
 use Hyperf\Validation\Request\FormRequest;
 
-class ArticleRequest extends FormRequest {
+class ArticleRequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool {
+    public function authorize(): bool
+    {
         return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array {
+    public function rules(): array
+    {
         $rules = [];
         $uri   = $this->path();
         switch ($uri) {
@@ -29,6 +33,7 @@ class ArticleRequest extends FormRequest {
                     'order'       => 'required',
                     'description' => 'required',
                     'editor_type' => 'required|in:0,1',
+                    'type'        => 'required|in:0,1',
                 ];
                 break;
             case 'article/delete':
@@ -44,14 +49,16 @@ class ArticleRequest extends FormRequest {
                 break;
             case 'article/like':
                 $rules = [
-                    'id' => 'required',
+                    'id'      => 'required',
+                    'user_id' => 'required'
                 ];
                 break;
         }
         return $rules;
     }
 
-    public function attributes(): array {
+    public function attributes(): array
+    {
         return [
             'id'      => '文章ID',
             'title'   => '文章标题',
