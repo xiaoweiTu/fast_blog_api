@@ -131,7 +131,7 @@ class ArticleService {
      */
     public function totalLikes()
     {
-        return Article::query()->sum('likes');
+        return UserLike::query()->count();
     }
 
     /**
