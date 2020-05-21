@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Exception\Handler;
 
 use App\Constants\ErrorCode;
+use App\Exception\WrongRequestException;
+use App\Services\MailService;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\ExceptionHandler;
@@ -48,8 +50,17 @@ class AppExceptionHandler extends ExceptionHandler
             }
         }
 
-        logger()->info('请求异常',$data);
-
+        if ( !($throwable instanceof ValidationException) &&
+             !($throwable instanceof TokenValidException) &&
+             !($throwable instanceof WrongRequestException)) {
+            var_dump( !($throwable instanceof ValidationException) &&
+                !($throwable instanceof TokenValidException));
+            // 邮箱通知异常
+            go(function () use($data) {
+                $email = "请求异常,异常信息:".json_encode($data,JSON_UNESCAPED_UNICODE);
+                MailService::sendWrongEmail($email);
+            });
+        }
 
         if ( $throwable instanceof TokenValidException ) {
             $data['code'] = ErrorCode::REQUEST_ERROR;

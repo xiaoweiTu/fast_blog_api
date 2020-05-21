@@ -16,6 +16,7 @@ use Psr\Log\LogLevel;
 return [
     'app_name' => env('APP_NAME', 'skeleton'),
     'debug'    => env('debug', false),
+    'email_debug' => env('EMAIL_DEBUG',false),
     'halt'     => env('JWT_SECRET','this is a fast blog'),
     'cdn'      => env('CDN_HOST',''),
     StdoutLoggerInterface::class => [

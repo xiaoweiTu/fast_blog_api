@@ -87,10 +87,56 @@ class UserController extends AbstractController
     /**
      * @param Jwt $jwt
      * @Middleware(JwtAuthMiddleware::class)
+     * @RateLimit(create=100,capacity=100,consume=1)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendVerifyCode(Jwt $jwt)
+    {
+        return $this->success($this->userService->sendVerifyCode($jwt->getParserData()));
+    }
+
+    /**
+     * @RateLimit(create=100,capacity=100,consume=1)
+     */
+    public function sendFindPassCode(UserRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->userService->sendFindPassCode($request->input('email')));
+    }
+
+    /**
+     * @param UserRequest $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function updatePass(UserRequest $request)
+    {
+        $request->validated();
+        return $this->success($this->userService->updatePassWord(
+            $request->input('email'),
+            $request->input('password'),
+            $request->input('code')));
+    }
+
+    /**
+     * @param Jwt $jwt
+     * @Middleware(JwtAuthMiddleware::class)
+     * @RateLimit(create=100,capacity=100,consume=1)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function verifyCode(UserRequest $request,Jwt $jwt)
+    {
+        $request->validated();
+        return $this->success($this->userService->verifyCode($request->input('code'), $jwt->getParserData()));
+    }
+
+    /**
+     * @param Jwt $jwt
+     * @Middleware(JwtAuthMiddleware::class)
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function info(Jwt $jwt) {
-        return $this->success($jwt->getParserData());
+        return $this->success($this->userService->getInfo($jwt->getParserData()));
     }
 
 
@@ -147,4 +193,5 @@ class UserController extends AbstractController
         $request->validated();
         return $this->success($this->userService->talkList($request->input('article_id')));
     }
+
 }

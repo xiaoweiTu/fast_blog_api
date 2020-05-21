@@ -8,6 +8,7 @@ use App\Exception\WrongRequestException;
 use App\Model\Blog\Article;
 use App\Model\Blog\Tag;
 use App\Services\ArticleService;
+use App\Services\MailService;
 use App\Services\UploadService;
 use App\Services\UserService;
 use Hyperf\Config\Annotation\Value;
@@ -52,6 +53,11 @@ class WebController extends AbstractController
      */
     protected $articleService;
 
+    /**
+     * @Inject()
+     * @var MailService
+     */
+    protected $mailService;
 
     /**
      * @return \Psr\Http\Message\ResponseInterface

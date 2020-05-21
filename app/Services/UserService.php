@@ -10,6 +10,7 @@ use App\Model\Blog\User;
 use App\Model\Blog\UserLike;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Redis\Redis;
 use Hyperf\Utils\Arr;
 use Phper666\JwtAuth\Jwt;
 use function Zipkin\Timestamp\now;
@@ -22,6 +23,15 @@ class UserService
      * @var Jwt
      */
     protected $jwt;
+
+
+    /**
+     * @Inject()
+     * @var Redis
+     */
+    protected $redis;
+
+    public const VERIFY_KEY = "user:verify:key:";
 
 
     public function login($email, $password, $ip, $isAdminLogin = true)
@@ -74,6 +84,16 @@ class UserService
         return ['token' => $token, 'user' => $admin];
     }
 
+
+    /**
+     * @param $user
+     *
+     * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
+     */
+    public function getInfo($user)
+    {
+        return User::query()->where('id', $user['id'])->first();
+    }
 
     /**
      * @param $params
@@ -129,6 +149,40 @@ class UserService
         return User::query()
             ->filter($params)
             ->orderBy('id')->paginate(Arr::get($params, 'per_page', 10));
+    }
+
+    protected function getVerifyKey($userId){
+        return self::VERIFY_KEY.$userId;
+    }
+
+    /**
+     * @param $user
+     */
+    public function sendVerifyCode($user)
+    {
+        $code = substr(md5(json_encode($user)),0,4);
+        $key = $this->getVerifyKey($user['id']);
+        $this->redis->setex($key, 60, $code);
+        MailService::sendVerifyCode($user['email'],$code);
+        return true;
+    }
+
+
+    /**
+     * @param $code
+     * @param $user
+     */
+    public function verifyCode($code, $user)
+    {
+        $key = $this->getVerifyKey($user['id']);
+        $codeCache = $this->redis->get($key);
+
+        if ( strtolower($codeCache) ==  strtolower($code) ) {
+            return User::query()->where('id', $user['id'])->update(['verify_at'=>date('Y-m-d H:i:s')]);
+        }
+
+        throw new WrongRequestException("令牌错误!");
+
     }
 
     /**
@@ -202,5 +256,52 @@ class UserService
             ->where('is_delete',0)
             ->orderBy('id')
             ->get();
+    }
+
+    /**
+     * @param $email string 发送密码找回code
+     */
+    public function sendFindPassCode($email)
+    {
+        $user =User::query()->where('email', $email)->first();
+
+        if ( empty($user) ) {
+            throw new WrongRequestException("无此账号!");
+        }
+
+        if ($user->verify_at == null ) {
+            throw new WrongRequestException("该邮箱未激活!");
+        }
+
+        $key = $this->getVerifyKey($email);
+        $code = substr(md5(time().rand(1,10000).$email),0,4);
+
+        $this->redis->setex($key,60,$code);
+
+        MailService::sendVerifyCode($email, $code);
+
+        return true;
+    }
+
+    /**
+     * @param $email
+     * @param $pass
+     * @param $code
+     *
+     * @return int
+     */
+    public function updatePassWord($email,$pass, $code)
+    {
+        $key = $this->getVerifyKey($email);
+
+        $codeCache = $this->redis->get($key);
+
+        if ( strtolower($codeCache) != strtolower($code)) {
+            throw new WrongRequestException("令牌验证失败!");
+        }
+
+        return User::query()->where('email', $email)->update([
+            'password' => $this->getHashPassword($pass)
+        ]);
     }
 }

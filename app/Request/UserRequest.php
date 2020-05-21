@@ -50,7 +50,7 @@ class UserRequest extends FormRequest
                 break;
             case 'user/talk':
                 $rules = [
-                    'user_id'         => 'required|exists:users,id',
+                    'user_id'    => 'required|exists:users,id',
                     'to_user_id' => 'required',
                     'article_id' => 'required',
                     'content'    => 'required|max:80',
@@ -68,6 +68,23 @@ class UserRequest extends FormRequest
                     'article_id' => 'required',
                 ];
                 break;
+            case 'user/verifyCode':
+                $rules = [
+                    'code' => 'required',
+                ];
+                break;
+            case 'user/sendFindPassCode':
+                $rules = [
+                    'email' => 'required',
+                ];
+                break;
+            case 'user/updatePass':
+                $rules = [
+                    'email'    => 'required',
+                    'password' => 'required',
+                    'code'     => 'required',
+                ];
+                break;
 
         }
 
@@ -81,6 +98,7 @@ class UserRequest extends FormRequest
             'email'    => '邮箱',
             'password' => '密码',
             'name'     => '昵称',
+            'code'     => '令牌'
         ];
     }
 

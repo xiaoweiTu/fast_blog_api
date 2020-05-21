@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Exception\WrongRequestException;
+use App\Services\MailService;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 use Psr\Container\ContainerInterface;
@@ -31,7 +33,17 @@ class CorsMiddleware implements MiddlewareInterface
         $whiteList = [
             'http://localhost:8080'
         ];
-        $origin = $request->getHeader('origin')[0];
+
+        $origin = $request->getHeader('origin');
+
+        if (empty($origin)) {
+            go(function () use($request){
+                $email = "非法请求来源,参数:".json_encode($request->getHeaders());
+                MailService::sendWrongEmail($email);
+            });
+            throw new WrongRequestException("非法来源请求!");
+        }
+        $origin = $origin[0];
 
         if (in_array($origin,$whiteList)) {
             $response = $response->withHeader('Access-Control-Allow-Origin',$origin)

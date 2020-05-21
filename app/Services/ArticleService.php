@@ -189,7 +189,6 @@ class ArticleService {
      */
     public function like($userId, $id)
     {
-
         if ( UserLike::query()->where('user_id',$userId)->where('article_id',$id)->count() > 0 ) {
             throw new WrongRequestException("您已经点过赞了!");
         }
