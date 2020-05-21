@@ -13,6 +13,7 @@ class AlterBlogArticlesTable extends Migration
     {
         Schema::table('blog_articles', function (Blueprint $table) {
             $table->unsignedTinyInteger('editor_type')->nullable(false)->default(0)->comment('编辑器类型  0:markdown,1:富文本');
+            $table->unsignedTinyInteger('type')->nullable(false)->default(0)->comment("0 普通 1 需登录");
         });
     }
 
@@ -22,8 +23,8 @@ class AlterBlogArticlesTable extends Migration
     public function down(): void
     {
         Schema::table('blog_articles', function (Blueprint $table) {
-            //
             $table->dropColumn('editor_type');
+            $table->dropColumn('type');
         });
     }
 }
