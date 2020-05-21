@@ -14,6 +14,8 @@ class AlterUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('last_login')->nullable(true)->default(null);
             $table->bigInteger('last_ip')->nullable(false)->default(0);
+            $table->timestamp('verify_at')->nullable(true)->default(null);
+
         });
     }
 
@@ -25,6 +27,7 @@ class AlterUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('last_login');
             $table->dropColumn('last_ip');
+            $table->dropColumn('verify_at');
         });
     }
 }
