@@ -37,10 +37,6 @@ class CorsMiddleware implements MiddlewareInterface
         $origin = $request->getHeader('origin');
 
         if (empty($origin)) {
-            go(function () use($request){
-                $email = "非法请求来源,参数:".json_encode($request->getHeaders());
-                MailService::sendWrongEmail($email);
-            });
             throw new WrongRequestException("非法来源请求!");
         }
         $origin = $origin[0];
