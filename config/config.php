@@ -19,6 +19,7 @@ return [
     'email_debug' => env('EMAIL_DEBUG',false),
     'halt'     => env('JWT_SECRET','this is a fast blog'),
     'cdn'      => env('CDN_HOST',''),
+    'white_list' => env('WHITE_LIST',['http://localhost:8080']),
     StdoutLoggerInterface::class => [
         'log_level' => [
             LogLevel::ALERT,
