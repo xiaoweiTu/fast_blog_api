@@ -30,7 +30,7 @@ class CorsMiddleware implements MiddlewareInterface
     {
         $response = Context::get(ResponseInterface::class);
 
-        $whiteList = config('white_list');
+        $whiteList = explode(',',config('white_list'));
 
         $origin = $request->getHeader('origin');
 
