@@ -32,11 +32,7 @@ php bin/hyperf.php migrate --seed
 密码
 123456
 
-6. 修改跨域中间件的指定域名
-
-app/Middleware/CorsMiddleware.php
-
-7. 启动项目
+6. 启动项目
 
 php bin/hyperf.php start
 
@@ -48,7 +44,7 @@ php bin/hyperf.php start
 
 # 关于网站配置
 
-在 config/autoload/site_settings 中配置
+请在.env文件中进行配置
 
 # 关于发送邮件
 
